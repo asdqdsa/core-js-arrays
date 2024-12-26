@@ -334,8 +334,11 @@ function calculateBalance(arr) {
  *    createChunks(['a', 'b', 'c', 'd', 'e'], 2) => [['a', 'b'], ['c', 'd'], ['e']]
  *    createChunks([10, 20, 30, 40, 50], 1) => [[10], [20], [30], [40], [50]]
  */
-function createChunks(/* arr, chunkSize */) {
-  throw new Error('Not implemented');
+function createChunks(arr, chunkSize) {
+  if (arr.length < 1) return [];
+  const head = arr.slice(0, chunkSize);
+  const rest = arr.slice(chunkSize);
+  return [head].concat(createChunks(rest, chunkSize));
 }
 
 /**
@@ -366,8 +369,10 @@ function generateOdds(len) {
  *   getElementByIndices(['one','two','three'], [2]) => 'three'  (arr[2])
  *   getElementByIndices([[[ 1, 2, 3]]], [ 0, 0, 1 ]) => 2        (arr[0][0][1])
  */
-function getElementByIndices(/* arr, indices */) {
-  throw new Error('Not implemented');
+function getElementByIndices(arr, indices) {
+  if (indices.length < 1) return arr;
+  const [idx, ...rest] = indices;
+  return getElementByIndices(arr[idx], rest);
 }
 
 /**
@@ -404,8 +409,15 @@ function getFalsyValuesCount(arr) {
  *                              [0,0,0,1,0],
  *                              [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  return Array(n)
+    .fill(0)
+    .reduce((acc, _, idx) => {
+      const temp = Array(n).fill(0);
+      temp[idx] = 1;
+      acc.push(temp);
+      return acc;
+    }, []);
 }
 
 /**
@@ -436,8 +448,8 @@ function getIndicesOfOddNumbers(numbers) {
  *    getHexRGBValues([ 0, 255, 16777215]) => [ '#000000', '#0000FF', '#FFFFFF' ]
  *    getHexRGBValues([]) => []
  */
-function getHexRGBValues(/* arr */) {
-  throw new Error('Not implemented');
+function getHexRGBValues(arr) {
+  return arr.map((val) => `#${val.toString(16).toUpperCase().padStart(6, 0)}`);
 }
 
 /**
@@ -485,8 +497,15 @@ function findCommonElements(arr1, arr2) {
  *    findLongestIncreasingSubsequence([3, 10, 2, 1, 20]) => longest is [3, 10] and [1, 20] => 2
  *    findLongestIncreasingSubsequence([50, 3, 10, 7, 40, 80]) => longest is [7, 40, 80] => 3
  */
-function findLongestIncreasingSubsequence(/* nums */) {
-  throw new Error('Not implemented');
+function findLongestIncreasingSubsequence(nums) {
+  return nums.reduce(
+    (acc, val, idx, arr) => {
+      if (val < arr[idx + 1]) acc.curr += 1;
+      else [acc.max, acc.curr] = [Math.max(acc.max, acc.curr), 1];
+      return acc;
+    },
+    { max: 0, curr: 1 }
+  ).max;
 }
 
 /**
@@ -503,8 +522,10 @@ function findLongestIncreasingSubsequence(/* nums */) {
  *  propagateItemsByPositionIndex([ 'a', 'b', 'c', null ]) => [ 'a', 'b', 'b', 'c', 'c', 'c',  null, null, null, null ]
  *  propagateItemsByPositionIndex([ 1,2,3,4,5 ]) => [ 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5 ]
  */
-function propagateItemsByPositionIndex(/* arr */) {
-  throw new Error('Not implemented');
+function propagateItemsByPositionIndex(arr) {
+  return arr.reduce((acc, val, idx) => {
+    return acc.concat(Array.from({ length: idx + 1 }, () => val));
+  }, []);
 }
 
 /**
@@ -520,8 +541,19 @@ function propagateItemsByPositionIndex(/* arr */) {
  *    shiftArray(['a', 'b', 'c', 'd'], -1) => ['b', 'c', 'd', 'a']
  *    shiftArray([10, 20, 30, 40, 50], -3) => [40, 50, 10, 20, 30]
  */
-function shiftArray(/* arr, n */) {
-  throw new Error('Not implemented');
+function shiftArray(arr, n) {
+  return arr.reduce((acc, val, idx, list) => {
+    let shiftIdx = idx;
+    if (n > 0)
+      shiftIdx = n + idx > list.length - 1 ? (n + idx) % list.length : n + idx;
+    if (n < 0)
+      shiftIdx =
+        idx + n >= 0
+          ? n + idx
+          : list.length - (Math.abs(idx + n) % list.length);
+    acc[shiftIdx] = val;
+    return acc;
+  }, Array(arr.length));
 }
 
 /**
